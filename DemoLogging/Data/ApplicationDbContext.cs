@@ -10,5 +10,7 @@ namespace DemoLogging.Data
         }
 
         public DbSet<Employee> Employees { get; set; }
+
+        public DbSet<Todo> Todos { get; set; }
     }
 }

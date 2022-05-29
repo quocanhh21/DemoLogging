@@ -1,8 +1,15 @@
 ﻿using DemoLogging.Data;
 using DemoLogging.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace DemoLogging.Controllers
 {
@@ -10,19 +17,36 @@ namespace DemoLogging.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
+        private IHttpClientFactory _clientFactory;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db,IHttpClientFactory clientFactory,IConfiguration configuration)
         {
             _logger = logger;
-            _logger.LogDebug(1, "NLog injected into HomeController");
+            _logger.LogInformation("NLog injected into HomeController");
             _db = db;
-            _logger.LogDebug(2, "Use Database");
+            _logger.LogInformation("Use Database");
+            _clientFactory = clientFactory;
+            _logger.LogInformation("HttpClientFactory injected into HomeController");
+            _configuration = configuration;
+            _logger.LogInformation("Iconfiguration injected into HomeController");
+
         }
 
         public IActionResult Index()
         {
             _logger.LogInformation("Hello, this is the index!");
-            return View();
+            
+            //HttpClient client = _clientFactory.CreateClient();
+
+            //string url = _configuration.GetValue<string>("Configuration:UrlApi");
+            //client.BaseAddress = new Uri(url);
+            //var response = client.GetAsync("/todos").Result;
+            //string jsonData = response.Content.ReadAsStringAsync().Result;
+            //List<string> todo= JsonSerializer.Deserialize<List<string>>(jsonData);
+
+            var data= TodoService.LoadTodo(null);
+            return View(data);
         }
 
         public IActionResult Privacy()
