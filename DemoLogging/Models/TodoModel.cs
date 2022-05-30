@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace DemoLogging.Models
+﻿namespace DemoLogging.Models
 {
     public class TodoModel
     {

@@ -26,22 +26,14 @@ namespace DemoLogging.Models
                 {
                     return;   // DB has been seeded
                 }
-                context.Employees.AddRange(
+                context.Employees.AddAsync(
                     new Employee
                     {
                         Name = "Le Quoc Anh",
                         Address = "123 su van hanh",
                         PhoneNumber = "09337748547",
                         Email = "leanh@gmail.com"
-                    },
-
-                     new Employee
-                     {
-                         Name = "Le Quoc A",
-                         Address = "123 cmt8",
-                         PhoneNumber = "09444557384",
-                         Email = "leanh123123@gmail.com"
-                     }
+                    }
                 );
                 context.SaveChanges();
             }

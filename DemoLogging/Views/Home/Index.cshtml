@@ -1,8 +1,29 @@
-﻿@{
+﻿@model List<TodoModel>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-   
+    <h1 class="display-4">Todo list</h1>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Completed</th>
+                <td scope="col">#</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in Model)
+            {
+                <tr>
+                    <td>@todo.Id</td>
+                    <td>@todo.Title</td>
+                    <td>@todo.Completed</td>
+                    <td scope="row"><button asp-controller="Home" asp-route-Id="@todo.Id" asp-action="Save" type="submit" class="btn btn-primary">Save</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

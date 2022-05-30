@@ -3,13 +3,12 @@ using DemoLogging.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DemoLogging.Controllers
 {
@@ -20,7 +19,7 @@ namespace DemoLogging.Controllers
         private IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db,IHttpClientFactory clientFactory,IConfiguration configuration)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _logger = logger;
             _logger.LogInformation("NLog injected into HomeController");
@@ -36,17 +35,32 @@ namespace DemoLogging.Controllers
         public IActionResult Index()
         {
             _logger.LogInformation("Hello, this is the index!");
-            
-            //HttpClient client = _clientFactory.CreateClient();
 
-            //string url = _configuration.GetValue<string>("Configuration:UrlApi");
-            //client.BaseAddress = new Uri(url);
-            //var response = client.GetAsync("/todos").Result;
-            //string jsonData = response.Content.ReadAsStringAsync().Result;
-            //List<string> todo= JsonSerializer.Deserialize<List<string>>(jsonData);
+            HttpClient client = _clientFactory.CreateClient();
+            string url = _configuration.GetValue<string>("Configuration:UrlApi");
+            client.BaseAddress = new Uri(url);
+            var response = client.GetAsync("/todos").Result;
+            string jsonData = response.Content.ReadAsStringAsync().Result;
+            List<TodoModel> allItems = JsonConvert.DeserializeObject<List<TodoModel>>(jsonData);
 
-            var data= TodoService.LoadTodo(null);
-            return View(data);
+            return View(allItems);
+        }
+
+        public async Task Save(int id)
+        {
+            _logger.LogInformation("Start save method");
+            TodoService todo = new TodoService();
+            var model = await todo.GetTodo(id);
+            await _db.Todos.AddAsync(
+                new Todo
+                {
+                    Id = model.Id,
+                    Title = model.Title,
+                    Completed = model.Completed
+                });
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("todo has been saved");
+            RedirectToAction("Index", "Home");
         }
 
         public IActionResult Privacy()
@@ -62,5 +76,4 @@ namespace DemoLogging.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
 }
