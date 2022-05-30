@@ -1,5 +1,3 @@
-using System;
-
 namespace DemoLogging.Models
 {
     public class ErrorViewModel
